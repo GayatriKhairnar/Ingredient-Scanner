@@ -3,3 +3,4 @@ paddlepaddle
 setuptools
 opencv-python
 streamlit
+cv2
