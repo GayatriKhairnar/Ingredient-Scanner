@@ -5,4 +5,4 @@ opencv-python
 numpy
 Pillow
 setuptools
-libgl1-mesa-glx
+
