@@ -1,6 +1,6 @@
-paddleocr
-paddlepaddle
-setuptools
-opencv-python
-streamlit
-cv2
+streamlit==1.21.0
+paddlepaddle==2.6.4
+paddleocr==2.6.1
+opencv-python==4.7.0
+numpy==1.24.2
+Pillow==9.5.0
