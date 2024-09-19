@@ -2,7 +2,7 @@ import streamlit as st
 from paddleocr import PaddleOCR
 import cv2
 import numpy as np
-from io import BytesIO
+#from io import BytesIO
 
 # Initialize PaddleOCR
 ocr = PaddleOCR(lang='en')
