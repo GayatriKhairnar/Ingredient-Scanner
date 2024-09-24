@@ -2,7 +2,6 @@ import streamlit as st
 from paddleocr import PaddleOCR
 import cv2
 import numpy as np
-#from io import BytesIO
 
 # Initialize PaddleOCR
 ocr = PaddleOCR(lang='en')
@@ -15,60 +14,95 @@ def highlight_specific_words(image, boxes, texts, target_words, color=(255, 0, 0
             cv2.polylines(image, [np.array(word_box)], isClosed=True, color=color, thickness=thickness)
     return image
 
-# Define a function to check if the ingredient list meets dietary preferences and return problematic words
-def check_dietary_preference(ingredients, preference):
-    if preference == 'Gluten-Free':
-        gluten_keywords = ['wheat', 'barley', 'rye', 'oats']
-        problematic_words = [word for word in gluten_keywords if any(word in ingredient.lower() for ingredient in ingredients)]
-    elif preference == 'Lactose Intolerant':
-        lactose_keywords = ['milk', 'lactose', 'cheese', 'butter', 'cream']
-        problematic_words = [word for word in lactose_keywords if any(word in ingredient.lower() for ingredient in ingredients)]
-    else:
-        return True, []
+# Define a function to check if the ingredient list meets dietary preferences
+def check_dietary_preferences(ingredients, preferences):
+    problematic_words = []
+    
+    keywords = {
+        'Gluten-Free': ['wheat', 'barley', 'rye', 'oats'],
+        'Lactose Intolerant': ['milk', 'lactose', 'cheese', 'butter', 'cream'],
+        'Nut Allergies': ['nut', 'almond', 'walnut', 'peanut'],
+        'Shellfish Allergy': ['shrimp', 'crab', 'lobster', 'shellfish'],
+        'Egg Allergy': ['egg', 'eggs'],
+        'Soy Allergy': ['soy', 'tofu', 'soy sauce'],
+        'Dairy Allergy': ['milk', 'dairy', 'cheese', 'butter'],
+        'Vegetarian': ['meat', 'chicken', 'fish', 'pork'],
+        'Vegan': ['meat', 'dairy', 'eggs', 'honey'],
+        'FODMAPs Intolerance': ['onion', 'garlic', 'wheat', 'legumes'],
+        'Paleo': ['grains', 'legumes', 'dairy', 'processed'],
+        'Keto': ['sugar', 'bread', 'pasta', 'rice'],
+    }
+
+    for preference in preferences:
+        if preference in keywords:
+            problematic_words.extend([word for word in keywords[preference] if any(word in ingredient.lower() for ingredient in ingredients)])
     
     return len(problematic_words) == 0, problematic_words
 
 # Streamlit app
-st.title('Ingredient Scanner for Dietary Preferences')
+st.set_page_config(page_title="Ingredient Scanner", layout="wide")
+st.title("🍽️ Ingredient Scanner for Dietary Preferences")
+st.markdown("""
+    This app helps you check if a product meets your dietary restrictions. 
+    Select your preferences below and scan the ingredient list!
+""")
 
-# Camera input
-st.write("Capture an image of the ingredient list using your camera:")
-camera_image = st.camera_input("Click to take a picture")
+# User dietary preferences
+st.subheader("Select Your Dietary Restrictions:")
+preferences_options = [
+    'Gluten-Free',
+    'Lactose Intolerant',
+    'Nut Allergies',
+    'Shellfish Allergy',
+    'Egg Allergy',
+    'Soy Allergy',
+    'Dairy Allergy',
+    'Vegetarian',
+    'Vegan',
+    'FODMAPs Intolerance',
+    'Paleo',
+    'Keto'
+]
 
-if camera_image is not None:
-    # Read the image from the camera input
-    image = np.array(bytearray(camera_image.read()), dtype=np.uint8)
-    img = cv2.imdecode(image, cv2.IMREAD_COLOR)
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    
-    # Perform OCR
-    result = ocr.ocr(img)
-    boxes = [res[0] for res in result[0]]
-    texts = [res[1][0] for res in result[0]]
-    scores = [res[1][1] for res in result[0]]
+preferences = []
+for option in preferences_options:
+    if st.checkbox(option):
+        preferences.append(option)
 
-    # Extract ingredients text
-    ingredients_text = ' '.join(texts)
+if preferences:
+    st.markdown("### Now scan the ingredient list:")
     
-    # User dietary preference
-    preference = st.selectbox(
-        'Select your dietary preference:',
-        ['Gluten-Free', 'Lactose Intolerant']
-    )
-    
-    # Check if the ingredients meet the preference and get problematic words
-    is_acceptable, problematic_words = check_dietary_preference(texts, preference)
-    
-    # Highlight problematic words
-    highlighted_img = highlight_specific_words(img, boxes, texts, problematic_words)
-    
-    # Display the image with bounding boxes
-    st.image(highlighted_img, caption='Highlighted Ingredients', use_column_width=True)
-    
-    # Display ingredient text and preference result
-    #st.write(f"Ingredients detected: {ingredients_text}")
-    if is_acceptable:
-        st.success(f"The product is suitable for your {preference} preference.")
-    else:
-        st.error(f"The product is NOT suitable for your {preference} preference.")
-        st.write(f"Problematic ingredients: {', '.join(problematic_words)}")
+    # Camera input
+    camera_image = st.camera_input("📷 Click to take a picture")
+
+    if camera_image is not None:
+        # Read the image from the camera input
+        image = np.array(bytearray(camera_image.read()), dtype=np.uint8)
+        img = cv2.imdecode(image, cv2.IMREAD_COLOR)
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        
+        # Perform OCR
+        result = ocr.ocr(img)
+        if not result or not result[0]:  # Check if OCR detected any text
+            st.error("❌ Please provide a clear image of the ingredient list.")
+        else:
+            boxes = [res[0] for res in result[0]]
+            texts = [res[1][0] for res in result[0]]
+
+            # Check if the ingredients meet the preferences and get problematic words
+            is_acceptable, problematic_words = check_dietary_preferences(texts, preferences)
+            
+            # Highlight problematic words
+            highlighted_img = highlight_specific_words(img, boxes, texts, problematic_words)
+            
+            # Display the image with bounding boxes
+            st.image(highlighted_img, caption='Highlighted Ingredients', use_column_width=True)
+            
+            # Display ingredient text and preference result
+            if is_acceptable:
+                st.success("✅ The product is suitable for your dietary preferences.")
+            else:
+                st.error("❌ The product is NOT suitable for your dietary preferences.")
+                st.write(f"**Problematic ingredients:** {', '.join(problematic_words)}")
+else:
+    st.warning("⚠️ Please select at least one dietary restriction before scanning.")
