@@ -1,5 +1,5 @@
 streamlit
-paddleocr==2.5.1
+paddleocr
 paddlepaddle==2.6.2
 opencv-python
 numpy
