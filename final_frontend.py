@@ -66,7 +66,7 @@ if camera_image is not None:
     st.image(highlighted_img, caption='Highlighted Ingredients', use_column_width=True)
     
     # Display ingredient text and preference result
-    st.write(f"Ingredients detected: {ingredients_text}")
+    #st.write(f"Ingredients detected: {ingredients_text}")
     if is_acceptable:
         st.success(f"The product is suitable for your {preference} preference.")
     else:
