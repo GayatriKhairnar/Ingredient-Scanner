@@ -1,5 +1,6 @@
 streamlit
 paddleocr
+opencv
 paddlepaddle==2.6.2
 opencv-python-headless
 numpy
