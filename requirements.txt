@@ -1,7 +1,7 @@
 streamlit
-paddleocr
+paddleocr==2.5.1
 paddlepaddle==2.6.2
-opencv-python-headless
+opencv-python
 numpy
 Pillow
 setuptools
