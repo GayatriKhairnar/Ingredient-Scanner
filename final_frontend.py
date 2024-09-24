@@ -1,6 +1,5 @@
 import streamlit as st
-import paddleocr
-import paddlepaddle as paddle
+from paddleocr import PaddleOCR
 import cv2
 import numpy as np
 
