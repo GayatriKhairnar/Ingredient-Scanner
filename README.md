@@ -1,5 +1,4 @@
-# 🍽️ Ingredient Scanner for Dietary Preferences
-
+# Scan&Shop
 This is a **Streamlit** web application that allows users to scan ingredient lists of products and check if they meet specific dietary restrictions. The app uses **PaddleOCR** for Optical Character Recognition (OCR) to extract text from images (such as ingredient labels), then checks the extracted ingredients against user-selected dietary preferences. The app highlights ingredients that conflict with the selected preferences and provides visual feedback.
 
 ## 📸 Features
