@@ -34,3 +34,8 @@ Check out the [live demo](https://huggingface.co/spaces/Gayatrikh16/ingredient-s
 ├── README.md                 # This file
 └── .streamlit
     └── config.toml           # Streamlit theming and config file
+
+![scanshop2](https://github.com/user-attachments/assets/5b8021fc-18cd-4f6d-be53-febfa95ab35d)
+![scanshop1](https://github.com/user-attachments/assets/edd736d5-a58b-497e-b76c-42ec01cf5fce)
+
+
